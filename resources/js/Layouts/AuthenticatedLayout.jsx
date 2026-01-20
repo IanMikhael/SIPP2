@@ -20,52 +20,17 @@ const menuItems = [
 export default function AuthenticatedLayout({ user, children }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [isNotifModalOpen, setIsNotifModalOpen] = useState(false);
-    const displayUser = user || { name: "REDI VANHAR" };
+    const displayUser = user || { name: "Tidak Ada" };
     const currentUrl = usePage().url;
 
-    // 🔸 NOTIFIKASI TERPADU: JATUH TEMPO + BARANG LELANG
-    const dummyNotifications = {
-        jatuh_tempo: [
-            {
-                id: 1,
-                type: "jatuh_tempo",
-                message:
-                    "Pengajuan GE-20260119-001 (Budi Santoso) jatuh tempo dalam 2 hari",
-                date: "2026-01-21",
-                read: false,
-            },
-            {
-                id: 2,
-                type: "jatuh_tempo",
-                message:
-                    "Pengajuan GE-20260118-005 (Siti Aminah) jatuh tempo besok!",
-                date: "2026-01-20",
-                read: false,
-            },
-        ],
-        lelang: [
-            {
-                id: 1,
-                type: "lelang",
-                message:
-                    "Barang GE-20260115-003 (Ahmad Fauzi) siap dilelang hari ini!",
-                date: "2026-01-19",
-                read: false,
-            },
-            {
-                id: 2,
-                type: "lelang",
-                message: "Barang GE-20260110-007 (Dewi Lestari) dilelang besok",
-                date: "2026-01-20",
-                read: false,
-            },
-        ],
-    };
+    // ✅ Ambil notifications (dengan "s")
+    const { notifications } = usePage().props;
 
+    // Hitung total notifikasi
     const totalUnread = [
-        ...dummyNotifications.jatuh_tempo,
-        ...dummyNotifications.lelang,
-    ].filter((n) => !n.read).length;
+        ...(notifications?.jatuh_tempo || []),
+        ...(notifications?.lelang || []),
+    ].length;
 
     const isActive = (route) => {
         return currentUrl === route;
@@ -215,18 +180,31 @@ export default function AuthenticatedLayout({ user, children }) {
                             )}
                         </button>
 
-                        {["Ganti Password", "Keluar"].map((btn) => (
-                            <button
-                                key={btn}
-                                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-[9px] lg:text-[10px] font-bold border border-white/20 transition-all shrink-0
-                                    ${
-                                        btn === "Keluar"
-                                            ? "bg-red-600 border-none hover:bg-red-700"
-                                            : "bg-white/10 hover:bg-white/20"
-                                    }`}
+                        {[
+                            {
+                                label: "Ganti Password",
+                                route: "/profile",
+                                method: "get",
+                            },
+                            {
+                                label: "Keluar",
+                                route: "/logout",
+                                method: "post",
+                            },
+                        ].map((item) => (
+                            <Link
+                                key={item.label}
+                                href={item.route}
+                                method={item.method}
+                                as="button"
+                                className={`whitespace-nowrap px-3 py-1.5 rounded-lg text-[9px] lg:text-[10px] font-bold border border-white/20 transition-all shrink-0 ${
+                                    item.label === "Keluar"
+                                        ? "bg-red-600 border-none hover:bg-red-700"
+                                        : "bg-white/10 hover:bg-white/20"
+                                }`}
                             >
-                                {btn}
-                            </button>
+                                {item.label}
+                            </Link>
                         ))}
                     </div>
                 </header>
@@ -258,13 +236,13 @@ export default function AuthenticatedLayout({ user, children }) {
                         {/* Konten Notifikasi */}
                         <div className="max-h-[70vh] overflow-y-auto">
                             {/* Bagian: Jatuh Tempo */}
-                            {dummyNotifications.jatuh_tempo.length > 0 && (
+                            {notifications?.jatuh_tempo?.length > 0 && (
                                 <div className="p-4 border-b border-slate-100">
                                     <h4 className="font-bold text-orange-600 text-xs mb-2 flex items-center gap-1">
                                         ⚠️ Jatuh Tempo Mendekati
                                     </h4>
                                     <div className="space-y-2">
-                                        {dummyNotifications.jatuh_tempo.map(
+                                        {notifications.jatuh_tempo.map(
                                             (notif) => (
                                                 <div
                                                     key={notif.id}
@@ -275,7 +253,7 @@ export default function AuthenticatedLayout({ user, children }) {
                                                     </p>
                                                     <p className="text-[9px] text-slate-500 mt-1">
                                                         {new Date(
-                                                            notif.date,
+                                                            notif.tgl_jatuh_tempo,
                                                         ).toLocaleDateString(
                                                             "id-ID",
                                                         )}
@@ -288,38 +266,38 @@ export default function AuthenticatedLayout({ user, children }) {
                             )}
 
                             {/* Bagian: Barang Lelang */}
-                            {dummyNotifications.lelang.length > 0 && (
+                            {notifications?.lelang?.length > 0 && (
                                 <div className="p-4">
                                     <h4 className="font-bold text-red-600 text-xs mb-2 flex items-center gap-1">
                                         🔥 Barang Siap Lelang
                                     </h4>
                                     <div className="space-y-2">
-                                        {dummyNotifications.lelang.map(
-                                            (notif) => (
-                                                <div
-                                                    key={notif.id}
-                                                    className="p-2 bg-red-50 rounded border-l-4 border-red-400"
-                                                >
-                                                    <p className="text-xs text-slate-700">
-                                                        {notif.message}
-                                                    </p>
-                                                    <p className="text-[9px] text-slate-500 mt-1">
-                                                        {new Date(
-                                                            notif.date,
-                                                        ).toLocaleDateString(
-                                                            "id-ID",
-                                                        )}
-                                                    </p>
-                                                </div>
-                                            ),
-                                        )}
+                                        {notifications.lelang.map((notif) => (
+                                            <div
+                                                key={notif.id}
+                                                className="p-2 bg-red-50 rounded border-l-4 border-red-400"
+                                            >
+                                                <p className="text-xs text-slate-700">
+                                                    {notif.message}
+                                                </p>
+                                                <p className="text-[9px] text-slate-500 mt-1">
+                                                    {new Date(
+                                                        notif.tgl_lelang,
+                                                    ).toLocaleDateString(
+                                                        "id-ID",
+                                                    )}
+                                                </p>
+                                            </div>
+                                        ))}
                                     </div>
                                 </div>
                             )}
 
                             {/* Tidak Ada Notifikasi */}
-                            {dummyNotifications.jatuh_tempo.length === 0 &&
-                                dummyNotifications.lelang.length === 0 && (
+                            {(!notifications?.jatuh_tempo ||
+                                notifications.jatuh_tempo.length === 0) &&
+                                (!notifications?.lelang ||
+                                    notifications.lelang.length === 0) && (
                                     <div className="p-6 text-center text-slate-500 text-sm">
                                         Tidak ada notifikasi
                                     </div>

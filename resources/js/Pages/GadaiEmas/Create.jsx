@@ -3,6 +3,7 @@ import { Head, router, Link } from "@inertiajs/react";
 import { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 
+
 export default function GadaiEmasCreate({ auth }) {
     // Generate nomor aplikasi unik
     const today = new Date();
