@@ -244,9 +244,15 @@ export default function AuthenticatedLayout({ user, children }) {
                                     <div className="space-y-2">
                                         {notifications.jatuh_tempo.map(
                                             (notif) => (
-                                                <div
+                                                <Link
                                                     key={notif.id}
-                                                    className="p-2 bg-orange-50 rounded border-l-4 border-orange-400"
+                                                    href={`/gadai-emas/${notif.id}`}
+                                                    onClick={() =>
+                                                        setIsNotifModalOpen(
+                                                            false,
+                                                        )
+                                                    }
+                                                    className="block p-2 bg-orange-50 rounded border-l-4 border-orange-400 hover:bg-orange-100 transition-colors"
                                                 >
                                                     <p className="text-xs text-slate-700">
                                                         {notif.message}
@@ -258,7 +264,7 @@ export default function AuthenticatedLayout({ user, children }) {
                                                             "id-ID",
                                                         )}
                                                     </p>
-                                                </div>
+                                                </Link>
                                             ),
                                         )}
                                     </div>
@@ -273,9 +279,13 @@ export default function AuthenticatedLayout({ user, children }) {
                                     </h4>
                                     <div className="space-y-2">
                                         {notifications.lelang.map((notif) => (
-                                            <div
+                                            <Link
                                                 key={notif.id}
-                                                className="p-2 bg-red-50 rounded border-l-4 border-red-400"
+                                                href={`/gadai-emas/${notif.id}`}
+                                                onClick={() =>
+                                                    setIsNotifModalOpen(false)
+                                                }
+                                                className="block p-2 bg-red-50 rounded border-l-4 border-red-400 hover:bg-red-100 transition-colors"
                                             >
                                                 <p className="text-xs text-slate-700">
                                                     {notif.message}
@@ -287,7 +297,7 @@ export default function AuthenticatedLayout({ user, children }) {
                                                         "id-ID",
                                                     )}
                                                 </p>
-                                            </div>
+                                            </Link>
                                         ))}
                                     </div>
                                 </div>

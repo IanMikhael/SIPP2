@@ -171,9 +171,12 @@ export default function GadaiEmasIndex({ auth, gadaiEmasList }) {
                                                 {item.berat_emas}
                                             </td>
                                             <td
-                                                className={`px-4 py-2 ${isJatuhTempoDekat(item.tgl_jatuh_tempo) ? "text-orange-600 font-bold" : ""}`}
+                                                className={`px-4 py-2 ${new Date(item.tgl_jatuh_tempo) && isJatuhTempoDekat(item.tgl_jatuh_tempo) ? "text-orange-600 font-bold" : ""}`}
                                             >
-                                                {item.tgl_jatuh_tempo || "-"}
+                                                {new Date(
+                                                    item.tgl_jatuh_tempo,
+                                                ).toLocaleDateString("id-ID") ||
+                                                    "-"}
                                             </td>
                                             <td className="px-4 py-2">
                                                 {formatRupiah(
