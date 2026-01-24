@@ -14,7 +14,7 @@ Route::get('/', function () {
         'laravelVersion' => Application::VERSION,
         'phpVersion' => PHP_VERSION,
     ]);
-})->middleware('auth');
+})->name('home');
 
 
 
@@ -28,6 +28,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/gadai-emas/create', [GadaiEmasController::class, 'create'])->name('gadai-emas.create');
     Route::post('/gadai-emas/store', [GadaiEmasController::class, 'store'])->name('gadai-emas.store');
     Route::get('/gadai-emas/{gadaiEmas}', [GadaiEmasController::class, 'show'])->name('gadai-emas.show');
+    Route::get('/gadai-emas/{gadaiEmas}/edit', [GadaiEmasController::class, 'edit'])->name('gadai-emas.edit');
+    Route::put('/gadai-emas/{gadaiEmas}', [GadaiEmasController::class, 'update'])->name('gadai-emas.update');
+    Route::delete('/gadai-emas/{gadaiEmas}', [GadaiEmasController::class, 'destroy'])
+    ->name('gadai-emas.destroy');
 });
 
 require __DIR__.'/auth.php';

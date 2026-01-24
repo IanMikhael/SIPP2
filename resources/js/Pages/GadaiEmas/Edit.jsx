@@ -1,15 +1,10 @@
+// resources/js/Pages/GadaiEmas/Edit.jsx
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, router, Link } from "@inertiajs/react";
 import { useState, useEffect } from "react";
-import { Toaster, toast } from "sonner";
+import { Toaster, toast } from "sonner"; // ← Pastikan import Toaster
 
-export default function GadaiEmasCreate({ auth }) {
-    // Generate nomor aplikasi unik
-    const today = new Date();
-    const dateStr = today.toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD
-    const randomSuffix = String(Math.floor(1000 + Math.random() * 9000)); // 1000–9999
-    const autoNomor = `GE-${dateStr}-${randomSuffix}`;
-
+export default function GadaiEmasEdit({ auth, gadaiEmas }) {
     // Harga dasar per gram (dalam Rupiah)
     const HARGA_EMAS = {
         "Emas Batangan": 1250000,
@@ -23,33 +18,37 @@ export default function GadaiEmasCreate({ auth }) {
         const hargaDasar = HARGA_EMAS[jenis] || 0;
         const kadarPersen = parseFloat(kadar) || 0;
         const nilai = hargaDasar * parseFloat(berat) * (kadarPersen / 100);
-        return Math.floor(nilai); // bulatkan ke bawah
+        return Math.floor(nilai);
     };
 
-    const [formData, setFormData] = useState({
-        nomorAplikasi: autoNomor,
-        jenisEmas: "Emas Batangan",
-        beratEmas: "",
-        kadarEmas: "99.99%",
-        noCif: "",
-        jangkaWaktu: "6 Bulan",
-        tglGadai: today.toISOString().split("T")[0],
-        tglJatuhTempo: "",
-        tglLelang: "",
-        nilaiTaksiran: "",
-        namaNasabah: "",
-        tempatLahir: "",
-        tglLahir: "",
-        namaIbu: "",
-        gadaiUlang: false,
-        tujuanTransaksi: "",
-        sektorEkonomi: "",
-        rubrikJaminan: "Emas Murni",
-        tujuanPinjaman: "",
-        kepemilikanUsaha: "Pribadi",
-        nik: "",
-        nomorTelepon: "",
-    });
+    // Data asli untuk perbandingan
+    const originalData = {
+        id: gadaiEmas.id,
+        nomorAplikasi: gadaiEmas.nomor_aplikasi,
+        jenisEmas: gadaiEmas.jenis_emas,
+        beratEmas: gadaiEmas.berat_emas?.toString() || "",
+        kadarEmas: gadaiEmas.kadar_emas || "99.99%",
+        noCif: gadaiEmas.no_cif || "",
+        jangkaWaktu: gadaiEmas.jangka_waktu || "6 Bulan",
+        tglGadai: gadaiEmas.tgl_gadai || "",
+        tglJatuhTempo: gadaiEmas.tgl_jatuh_tempo || "",
+        tglLelang: gadaiEmas.tgl_lelang || "",
+        nilaiTaksiran: gadaiEmas.nilai_taksiran?.toString() || "",
+        namaNasabah: gadaiEmas.nama_nasabah || "",
+        tempatLahir: gadaiEmas.tempat_lahir || "",
+        tglLahir: gadaiEmas.tgl_lahir || "",
+        namaIbu: gadaiEmas.nama_ibu_kandung || "",
+        gadaiUlang: !!gadaiEmas.gadai_ulang_otomatis,
+        tujuanTransaksi: gadaiEmas.tujuan_transaksi || "",
+        sektorEkonomi: gadaiEmas.sektor_ekonomi || "",
+        rubrikJaminan: gadaiEmas.rubrik_jaminan || "Emas Murni",
+        tujuanPinjaman: gadaiEmas.tujuan_pinjaman || "",
+        kepemilikanUsaha: gadaiEmas.kepemilikan_usaha || "Pribadi",
+        nik: gadaiEmas.nik || "",
+        nomorTelepon: gadaiEmas.nomor_telepon || "",
+    };
+
+    const [formData, setFormData] = useState({ ...originalData });
 
     // Hitung ulang taksiran saat jenis/berat/kadar berubah
     useEffect(() => {
@@ -68,24 +67,53 @@ export default function GadaiEmasCreate({ auth }) {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
+    // Konversi camelCase ke snake_case
+    const toSnakeCase = (str) => {
+        return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+    };
+
+    // Dapatkan hanya field yang berubah
+    const getChangedFields = () => {
+        const changed = {};
+        for (const key in formData) {
+            if (key === "id") continue;
+            if (formData[key] !== originalData[key]) {
+                changed[toSnakeFace(key)] = formData[key];
+            }
+        }
+        return changed;
+    };
+
     const handleSubmit = (isDraft = false) => {
         if (!isDraft && !formData.namaNasabah) {
             toast.error("Nama Nasabah wajib diisi.");
             return;
         }
 
+        const changedFields = getChangedFields();
+        console.log(
+            "🔍 Total changed fields:",
+            Object.keys(changedFields).length,
+        );
+
+        if (Object.keys(changedFields).length === 0) {
+            toast.info("Tidak ada perubahan data.");
+
+            // Beri waktu toast muncul sebelum redirect
+            setTimeout(() => {
+                router.visit("/gadai-emas");
+            }, 1500);
+            return;
+        }
+
         const payload = {
-            ...formData,
-            nilaiTaksiran: formData.nilaiTaksiran,
-            nik: formData.nik,
-            nomorTelepon: formData.nomorTelepon, // sudah angka
+            _method: "put",
+            ...changedFields,
             _action: isDraft ? "draft" : "submit",
         };
 
-        console.log("Submitting payload:", payload);
-
         const promise = new Promise((resolve, reject) => {
-            router.post("/gadai-emas/store", payload, {
+            router.post(`/gadai-emas/${formData.id}`, payload, {
                 onSuccess: () => resolve(),
                 onError: (errors) => {
                     const firstError = errors[Object.keys(errors)[0]];
@@ -95,10 +123,10 @@ export default function GadaiEmasCreate({ auth }) {
         });
 
         toast.promise(promise, {
-            loading: `Sedang ${isDraft ? "menyimpan draft" : "mengajukan"}...`,
+            loading: `Sedang ${isDraft ? "memperbarui draft" : "memperbarui"}...`,
             success: isDraft
-                ? "Draft berhasil disimpan!"
-                : "Pengajuan gadai emas berhasil diajukan!",
+                ? "Draft berhasil diperbarui!"
+                : "Pengajuan gadai emas berhasil diperbarui!",
             error: (err) => err.message,
         });
     };
@@ -111,13 +139,15 @@ export default function GadaiEmasCreate({ auth }) {
 
     return (
         <AuthenticatedLayout user={auth?.user}>
-            <Head title="Pengajuan Gadai Emas" />
+            <Head title="Edit Pengajuan Gadai Emas" />
+
+            {/* 👇 INI YANG WAJIB ADA */}
             <Toaster position="top-right" richColors />
 
             <div className="w-full max-w-[1200px] mx-auto transition-all">
                 <div className="flex justify-between py-6 border-b border-slate-200 mb-4">
                     <h2 className="text-xs lg:text-sm font-bold text-slate-800 mb-4 border-l-4 border-amber-600 pl-3">
-                        Pengajuan Gadai Emas
+                        Edit Pengajuan Gadai Emas
                     </h2>
                     <Link
                         href="/gadai-emas"
@@ -420,7 +450,7 @@ export default function GadaiEmasCreate({ auth }) {
                         onClick={() => handleSubmit(false)}
                         className="w-full sm:w-auto px-8 py-2.5 bg-amber-600 text-white rounded-xl text-xs font-bold hover:bg-amber-700 transition-all shadow-lg shadow-amber-100 order-1 sm:order-2"
                     >
-                        Ajukan Gadai
+                        Perbarui
                     </button>
                     <button
                         onClick={() => handleSubmit(true)}

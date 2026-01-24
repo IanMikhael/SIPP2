@@ -30,7 +30,9 @@ class GadaiEmas extends Model
         'rubrik_jaminan',
         'tujuan_pinjaman',
         'kepemilikan_usaha',
-        'status'
+        'status',
+        'nik',
+        'nomor_telepon'
     ];
 
     protected $casts = [

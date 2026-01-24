@@ -141,6 +141,14 @@ export default function GadaiEmasShow({ auth, gadaiEmas }) {
                                 label="No CIF"
                                 value={gadaiEmas.no_cif || "-"}
                             />
+                            <InfoItem
+                                label="NIK"
+                                value={gadaiEmas.nik || "-"}
+                            />
+                            <InfoItem
+                                label="Nomor Telepon"
+                                value={gadaiEmas.nomor_telepon || "-"}
+                            />
                         </div>
                     </div>
 

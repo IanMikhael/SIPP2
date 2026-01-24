@@ -29,6 +29,8 @@ return new class extends Migration
             $table->string('tempat_lahir');
             $table->date('tgl_lahir');
             $table->string('nama_ibu_kandung');
+            $table->string('nik')->nullable(); // NIK 16 digit
+            $table->string('nomor_telepon')->nullable();
 
             // Opsi
             $table->boolean('gadai_ulang_otomatis')->default(false);
