@@ -75,10 +75,29 @@ export default function GadaiEmasCreate({ auth }) {
         }
 
         const payload = {
-            ...formData,
-            nilaiTaksiran: formData.nilaiTaksiran,
+            _method: "post", // atau 'put' untuk update
+            nomor_aplikasi: formData.nomorAplikasi, // ← ubah ke snake_case
+            jenis_emas: formData.jenisEmas,
+            berat_emas: formData.beratEmas,
+            kadar_emas: formData.kadarEmas,
+            no_cif: formData.noCif || null,
+            jangka_waktu: formData.jangkaWaktu,
+            tgl_gadai: formData.tglGadai,
+            tgl_jatuh_tempo: formData.tglJatuhTempo || null,
+            tgl_lelang: formData.tglLelang || null,
+            nilai_taksiran: formData.nilaiTaksiran,
+            nama_nasabah: formData.namaNasabah,
+            tempat_lahir: formData.tempatLahir,
+            tgl_lahir: formData.tglLahir,
+            nama_ibu_kandung: formData.namaIbu,
             nik: formData.nik,
-            nomorTelepon: formData.nomorTelepon, // sudah angka
+            nomor_telepon: formData.nomorTelepon,
+            gadai_ulang_otomatis: formData.gadaiUlang,
+            tujuan_transaksi: formData.tujuanTransaksi,
+            sektor_ekonomi: formData.sektorEkonomi,
+            rubrik_jaminan: formData.rubrikJaminan,
+            tujuan_pinjaman: formData.tujuanPinjaman || null,
+            kepemilikan_usaha: formData.kepemilikanUsaha,
             _action: isDraft ? "draft" : "submit",
         };
 
