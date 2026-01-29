@@ -78,7 +78,7 @@ export default function GadaiEmasEdit({ auth, gadaiEmas }) {
         for (const key in formData) {
             if (key === "id") continue;
             if (formData[key] !== originalData[key]) {
-                changed[toSnakeFace(key)] = formData[key];
+                changed[toSnakeCase(key)] = formData[key];
             }
         }
         return changed;

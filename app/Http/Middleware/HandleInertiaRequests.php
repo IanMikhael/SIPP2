@@ -65,7 +65,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
-            'notifications' => $notifications, // ← tambahkan di sini
+            'notifications' => $notifications, 
         ]);
     }
 }
