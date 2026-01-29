@@ -204,13 +204,13 @@ export default function GadaiEmasIndex({ auth, gadaiEmasList }) {
                                                 <div className="flex gap-1">
                                                     <Link
                                                         href={`/gadai-emas/${item.id}`}
-                                                        className="px-2 py-1 bg-slate-100 text-[10px] rounded hover:bg-slate-200"
+                                                        className="px-2 py-1 bg-blue-200 text-[10px] rounded hover:bg-slate-200"
                                                     >
                                                         Lihat
                                                     </Link>
                                                     <Link
                                                         href={`/gadai-emas/${item.id}/edit`}
-                                                        className="px-2 py-1 bg-slate-100 text-[10px] rounded hover:bg-slate-200"
+                                                        className="px-2 py-1 bg-yellow-100 text-[10px] rounded hover:bg-slate-200"
                                                     >
                                                         Edit
                                                     </Link>

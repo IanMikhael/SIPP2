@@ -268,7 +268,6 @@ export default function GadaiEmasEdit({ auth, gadaiEmas }) {
                                     handleChange("tglGadai", val)
                                 }
                                 isYellow
-                                disabled
                             />
                             <FormRow
                                 label="Tgl Jatuh Tempo"
